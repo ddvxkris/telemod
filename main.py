@@ -45,7 +45,7 @@ def handle_user(func):
 if __name__ == '__main__':
     # example code
 
-    bot = telebot.TeleBot('5149939704:AAEWTPpQHm_6tf7FmT6BL-4ir92ryJZqWug')
+    bot = telebot.TeleBot('yourtokenhere')
 
     @bot.message_handler(commands=['start', 'help'])
     @handle_user
