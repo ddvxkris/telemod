@@ -43,8 +43,7 @@ def handle_user(func):
 
 
 if __name__ == '__main__':
-    # example code
-
+    # replace yourtokenhere with your token (google about botfather if you don't know what you need to paste)
     bot = telebot.TeleBot('yourtokenhere')
 
     @bot.message_handler(commands=['start', 'help'])
