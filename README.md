@@ -8,4 +8,4 @@ Boilerplate for people who want to make bots that require user local data and mu
 4. Use.
 
 ## Disclaimer
-I'm not maintain this project, but i don't think it's needed for projects with 75 lines of code. So don't shoot yourself in a foot and enjoy.
+I'm not maintain this project, but i don't think it's needed for projects with 74 lines of code. So don't shoot yourself in a foot and enjoy.
