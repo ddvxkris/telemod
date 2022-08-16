@@ -42,7 +42,7 @@ if __name__ == '__main__':
         if message.reply_to_message == None:
             bot.reply_to(message, 'Должно быть ответом на сообщение!')
         elif message.reply_to_message.from_user.username == message.from_user.username or message.reply_to_message.from_user.is_bot:
-            bot.send_photo(message.chat.id, '', reply_to_message_id=message.id)
+            bot.send_message(message.chat.id, 'Хватит дурачиться.', reply_to_message_id=message.id)
         else:
             user_index = find_user_data_index(message.reply_to_message.from_user.username)
             if not user_datas[user_index].reported_by.__contains__(message.from_user.username):
