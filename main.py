@@ -35,7 +35,7 @@ def handle_user(func):
     return wrapper
 
 if __name__ == '__main__':
-    bot = telebot.TeleBot('5149939704:AAEWTPpQHm_6tf7FmT6BL-4ir92ryJZqWug')
+    bot = telebot.TeleBot('yourtokenhere')
 
     # отвечает на команду, а через некоторое время удаляет ответ и команду (чтобы не засорять чат)
     def reply_and_delete(message: types.Message, text: str):
