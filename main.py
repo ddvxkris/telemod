@@ -30,7 +30,7 @@ def handle_user(func):
     def wrapper(message):
         if find_user_data_index(message.from_user.username) == -1:
             user_datas.append(UserData(message.from_user.username))
-            print(f'Новый пользователь {message.from_user.username} начал диалог с ботом')
+            print(f'Новый пользователь {message.from_user.username} может быть взаимодействован через бота')
         func(message)
     return wrapper
 
@@ -53,28 +53,31 @@ if __name__ == '__main__':
         if message.reply_to_message == None:
             reply_and_delete(message, 'Должно быть ответом на сообщение!')
         elif message.reply_to_message.from_user.username == message.from_user.username or message.reply_to_message.from_user.is_bot:
-            bot.send_message(message.chat.id, 'Хватит дурачиться.', reply_and_delete_message_id=message.id)
+            reply_and_delete(message, 'Хватит дурачиться.')
         else:
-            user_index = find_user_data_index(message.reply_to_message.from_user.username)
-            if not user_datas[user_index].reported_by.__contains__(message.from_user.username):
-                user_datas[user_index].reports += 1
-                user_datas[user_index].reported_messages.append(message.reply_to_message)
-                user_datas[user_index].reported_by.append(message.from_user.username)
-                reply_and_delete(message, 'Репорт отправлен')
-                if user_datas[user_index].reports >= 2:
-                    bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, until_date=time()+100)
-                    
-                    for rep_message in user_datas[user_index].reported_messages:
-                        try:
-                            bot.delete_message(rep_message.chat.id, rep_message.id)
-                        except:
-                            continue
+            try:
+                user_index = find_user_data_index(message.reply_to_message.from_user.username)
+                if not user_datas[user_index].reported_by.__contains__(message.from_user.username):
+                    user_datas[user_index].reports += 1
+                    user_datas[user_index].reported_messages.append(message.reply_to_message)
+                    user_datas[user_index].reported_by.append(message.from_user.username)
+                    reply_and_delete(message, 'Репорт отправлен')
+                    if user_datas[user_index].reports >= 2:
+                        bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, until_date=time()+100)
+                        
+                        for rep_message in user_datas[user_index].reported_messages:
+                            try:
+                                bot.delete_message(rep_message.chat.id, rep_message.id)
+                            except:
+                                continue
 
-                    user_datas[user_index].reports = 0
-                    user_datas[user_index].reported_messages = []
-                    user_datas[user_index].reported_by = []
-            else:
-                reply_and_delete(message, 'Вы уже отправляли репорт на этого пользователя')
+                        user_datas[user_index].reports = 0
+                        user_datas[user_index].reported_messages = []
+                        user_datas[user_index].reported_by = []
+                else:
+                    reply_and_delete(message, 'Вы уже отправляли репорт на этого пользователя')
+            except:
+                reply_and_delete(message, 'Не удалось отправить репорт.')
  
     @bot.message_handler(commands=['ban'])
     @handle_user
