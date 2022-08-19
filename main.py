@@ -1,3 +1,6 @@
+from ast import pattern
+from encodings import utf_8
+from re import M
 from threading import Thread
 from time import sleep, time
 try:
@@ -55,13 +58,14 @@ if __name__ == '__main__':
         elif message.reply_to_message.from_user.username == message.from_user.username or message.reply_to_message.from_user.is_bot:
             reply_and_delete(message, 'Хватит дурачиться.')
         else:
-            try:
-                user_index = find_user_data_index(message.reply_to_message.from_user.username)
-                if not user_datas[user_index].reported_by.__contains__(message.from_user.username):
-                    user_datas[user_index].reports += 1
-                    user_datas[user_index].reported_messages.append(message.reply_to_message)
-                    user_datas[user_index].reported_by.append(message.from_user.username)
-                    reply_and_delete(message, 'Репорт отправлен')
+            
+            user_index = find_user_data_index(message.reply_to_message.from_user.username)
+            if not user_datas[user_index].reported_by.__contains__(message.from_user.username):
+                user_datas[user_index].reports += 1
+                user_datas[user_index].reported_messages.append(message.reply_to_message)
+                user_datas[user_index].reported_by.append(message.from_user.username)
+                reply_and_delete(message, 'Репорт отправлен')
+                try:
                     if user_datas[user_index].reports >= 2:
                         bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, until_date=time()+100)
                         
@@ -74,10 +78,10 @@ if __name__ == '__main__':
                         user_datas[user_index].reports = 0
                         user_datas[user_index].reported_messages = []
                         user_datas[user_index].reported_by = []
-                else:
-                    reply_and_delete(message, 'Вы уже отправляли репорт на этого пользователя')
-            except:
-                reply_and_delete(message, 'Не удалось отправить репорт.')
+                    else:
+                        reply_and_delete(message, 'Вы уже отправляли репорт на этого пользователя')
+                except:
+                    reply_and_delete(message, 'Не удалось удалить сообщение или ограничить участника.')
  
     @bot.message_handler(commands=['ban'])
     @handle_user
@@ -97,6 +101,16 @@ if __name__ == '__main__':
     @bot.message_handler()
     @handle_user
     def message_handling(message: types.Message):
-        pass
+        symbols_to_clear = '!?@#$%^&*:;\'"()[]{}<>|\\/-=+~`'
+        clean_text = message.text.translate(str.maketrans(symbols_to_clear, ' ' * len(symbols_to_clear))).replace(' ', '').lower()
+        for bad_word in open('bad_words.txt', 'r', encoding='utf_8').read().split():
+            if bad_word in clean_text:
+                def delete_and_reply():
+                    nonlocal message
+                    bot_message = bot.reply_to(message, 'Тут не матерятся.')
+                    bot.delete_message(message.chat.id, message.id)
+                    sleep(10)
+                    bot.delete_message(bot_message.chat.id, bot_message.id)
+                Thread(target=delete_and_reply, daemon=True).start()
 
     bot.polling(True)
